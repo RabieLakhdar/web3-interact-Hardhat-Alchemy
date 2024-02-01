@@ -10,3 +10,5 @@ In this tutorial, you will discover how to create a full stack dApp by connectin
 
 Before running `npm start` in your terminal to start the React project, run `npm install` to download all the package dependencies.
 
+Should be update your `config.js` file
+

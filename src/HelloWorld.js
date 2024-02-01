@@ -1,7 +1,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import {
-  helloWorldContract,
+  contract,
   connectWallet,
   updateMessage,
   loadCurrentMessage,
@@ -16,24 +16,42 @@ const HelloWorld = () => {
   const [newMessage, setNewMessage] = useState("");
 
   //called only once
-  useEffect(async () => {
-    
+  useEffect(() => {
+    async function getMessage() {
+      setMessage(await loadCurrentMessage())
+    }
+    getMessage()
+    addSmartContractListener()
+
+    async function fetchWallet() {
+      const { address, status } = await getCurrentWalletConnected();
+      setWallet(address);
+      setStatus(status);
+    }
+    fetchWallet();
   }, []);
 
-  function addSmartContractListener() { //TODO: implement
-    
+  function addSmartContractListener() {
+    contract.events.UpdatedMessages({}, (error, data) => {
+      if (error) {
+        setStatus("Sorry! " + error.message);
+      } else {
+        setMessage(data.returnValues[1]);
+        setNewMessage("");
+        setStatus("Funny. Your message has been updated!");
+      }
+    });
   }
 
-  function addWalletListener() { //TODO: implement
-    
-  }
-
-  const connectWalletPressed = async () => { //TODO: implement
-    
+  const connectWalletPressed = async () => {
+    const walletResponse = await connectWallet();
+    setStatus(walletResponse.status);
+    setWallet(walletResponse.address);
   };
 
   const onUpdatePressed = async () => { //TODO: implement
-    
+    const { status } = await updateMessage(walletAddress, newMessage);
+    setStatus(status);
   };
 
   //the UI of our component
